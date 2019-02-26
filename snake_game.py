@@ -8,10 +8,9 @@ class SnakeGame:
     DOWN = (0, 1)
     LEFT = (-1, 0)
     RIGHT = (1, 0)
-    def __init__(self, window):
-        self.snake = Snake(12, 12, self.RIGHT, 3)
-        # self.snake.set_direction(self.RIGHT)
-        self.board = Board(25, 25)
+    def __init__(self, window, snake, board):
+        self.snake = snake
+        self.board = board
         self.window = window
         
         # draw the board
@@ -64,8 +63,6 @@ class SnakeGame:
 
         if new_pos == self.food:
             self.point += 1
-            self.board.clear_cell(self.food[0], self.food[1])
-            # TODO: add the tail back to the body
             self.snake.get_body().append(tail)
             self.food = self.generate_new_food()
         else:
