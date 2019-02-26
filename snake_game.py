@@ -66,6 +66,7 @@ class SnakeGame:
             self.point += 1
             self.board.clear_cell(self.food[0], self.food[1])
             # TODO: add the tail back to the body
+            self.snake.get_body().append(tail)
             self.food = self.generate_new_food()
         else:
             # clear the last rect of the snake body and remove it
