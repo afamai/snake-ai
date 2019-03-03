@@ -17,16 +17,6 @@ class SnakeGame:
         self.cell_width = window.getWidth() / self.board.get_width()
         self.cell_height = window.getHeight() / self.board.get_height()
 
-        # # draw the horizontal lines
-        # for i in range(self.board.get_width() + 1):
-        #     line = Line(Point(0, i * self.cell_height), Point(window.getWidth(), i * self.cell_height))
-        #     line.draw(window)
-
-        # # draw the vertical lines
-        # for i in range(self.board.get_height() + 1):
-        #     line = Line(Point(i * self.cell_width, 0), Point(i * self.cell_width, window.getHeight()))
-        #     line.draw(window)
-
         # draw the snake
         self.snake_rects = []
         for (x, y) in self.snake.get_body():
@@ -37,8 +27,8 @@ class SnakeGame:
         self.food = self.generate_new_food()
         self.point = 0
     
-    def update(self):
-        key = self.window.checkKey()
+    def update(self, key):
+        # key = self.window.checkKey()
         if (key == 'Up' and self.snake.get_direction() != self.DOWN):
             self.snake.set_direction(self.UP)
         elif (key == 'Down' and self.snake.get_direction() != self.UP):
@@ -51,13 +41,15 @@ class SnakeGame:
         # move the snake
         tail = self.snake.move()
         new_pos = self.snake.get_body()[0]
+
         # check if the snake is in the zone or dead
         if (self.snake.is_dead() or new_pos[0] < 0 or new_pos[0] > self.board.get_width()-1 or new_pos[1] < 0 or new_pos[1] > self.board.get_height()-1):
             print('Game Over')
             self.window.close()
             return True
-        self.board.set_cell(new_pos[0], new_pos[1], 1)
+
         # draw the new head
+        self.board.set_cell(new_pos[0], new_pos[1], 1)
         head = self._draw_rect(new_pos[0], new_pos[1])
         self.snake_rects.insert(0, head)
 
