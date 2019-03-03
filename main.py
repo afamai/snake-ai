@@ -17,10 +17,11 @@ g = Genome(250, 4)
 keys = ['Up', 'Right', 'Down', 'Left']
 # game loop
 over = False
-while not over:
-    data = np.array(board.data)
-    result = g.activate(data.flatten())
-    key = keys[np.argmax(result)]
-    print(key)
-    over = game.update(key)
-    time.sleep(0.1)
+n = 333
+print(g.mutate_add_node(n))
+# while not over:
+#     data = np.array(board.data)
+#     result = g.activate(data.flatten())
+#     key = keys[np.argmax(result)]
+#     over = game.update(key)
+#     time.sleep(0.05)

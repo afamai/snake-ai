@@ -26,7 +26,7 @@ class Genome:
                 onode.add_incoming(connection)
                 self.innov_counter += 1
     
-    def mutate_add_connection(self, innov_number):
+    def mutate_add_link(self, innov_number):
         possible_outputs = self.hidden_nodes + self.output_nodes
         onode = choice(possible_outputs)
         possible_inputs = possible_outputs + self.input_nodes
@@ -45,10 +45,33 @@ class Genome:
         # create new connection
         weight = random()
         new_link = Link(inode, onode, weight, innov_number)
+        innov_number += 1
         inode.add_outgoing(new_link)
         onode.add_incoming(new_link)
         self.connections.append(new_link)
-        return True
+        return innov_number
+    
+    def mutate_add_node(self, innov_number):
+        # find random link
+        link = choice(self.connections)
+        # create new node
+        bias = random()
+        node = Node(NodeType.HIDDEN, bias)
+        # create 2 new links
+        weight = random()
+        link1 = Link(link.in_node, node, weight, innov_number)
+        innov_number += 1
+        link.in_node.add_outgoing(link1)
+        node.add_incoming(link1)
+        weight = random()
+        link2 = Link(node, link.out_node, weight, innov_number)
+        node.add_outgoing(link2)
+        link.out_node.add_incoming(link2)
+        innov_number += 1
+        self.connections += [link1, link2]
+        # disable the original link
+        link.enable = False
+        return innov_number
 
     def activate(self, inputs):
         # pass inputs into input nodes

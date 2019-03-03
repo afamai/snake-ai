@@ -20,7 +20,7 @@ class SnakeGame:
         # draw the snake
         self.snake_rects = []
         for (x, y) in self.snake.get_body():
-            self.board.set_cell(x, y, 1)
+            self.board.set_cell(x, y, 0.5)
             rect = self._draw_rect(x, y)
             self.snake_rects.append(rect)
         
@@ -49,7 +49,7 @@ class SnakeGame:
             return True
 
         # draw the new head
-        self.board.set_cell(new_pos[0], new_pos[1], 1)
+        self.board.set_cell(new_pos[0], new_pos[1], 0.5)
         head = self._draw_rect(new_pos[0], new_pos[1])
         self.snake_rects.insert(0, head)
 
@@ -71,7 +71,7 @@ class SnakeGame:
             random_y = random.randint(0, self.board.get_height()-1)
             if (random_x, random_y) not in self.snake.get_body():
                 break
-        self.board.set_cell(random_x, random_y, 2)
+        self.board.set_cell(random_x, random_y, 1)
         self._draw_rect(random_x, random_y)
         return (random_x, random_y)
 
