@@ -16,15 +16,17 @@ class Genome:
 
         # create the links for a simple feedforward neural network
         self.connections = []
-        self.innov_counter = 0
+        innov_counter = 0
         for inode in self.input_nodes:
             for onode in self.output_nodes:
-                weight = random()
-                connection = Link(inode, onode, weight, self.innov_counter)
-                self.connections.append(connection)
-                inode.add_outgoing(connection)
-                onode.add_incoming(connection)
-                self.innov_counter += 1
+                innov_counter = self.add_connection(inode, onode, random(), innov_counter)
+
+    def add_connection(self, inode, onode, weight, innov_number):
+        link = Link(inode, onode, weight, innov_number)
+        inode.add_outgoing(link)
+        onode.add_incoming(link)
+        self.connections.append(link)
+        return innov_number + 1
     
     def mutate_add_link(self, innov_number):
         possible_outputs = self.hidden_nodes + self.output_nodes
@@ -43,13 +45,7 @@ class Genome:
         
         # Allow recurrent links for now
         # create new connection
-        weight = random()
-        new_link = Link(inode, onode, weight, innov_number)
-        innov_number += 1
-        inode.add_outgoing(new_link)
-        onode.add_incoming(new_link)
-        self.connections.append(new_link)
-        return innov_number
+        return self.add_connection(inode, onode, random(), innov_number)
     
     def mutate_add_node(self, innov_number):
         # find random link
@@ -58,17 +54,8 @@ class Genome:
         bias = random()
         node = Node(NodeType.HIDDEN, bias)
         # create 2 new links
-        weight = random()
-        link1 = Link(link.in_node, node, weight, innov_number)
-        innov_number += 1
-        link.in_node.add_outgoing(link1)
-        node.add_incoming(link1)
-        weight = random()
-        link2 = Link(node, link.out_node, weight, innov_number)
-        node.add_outgoing(link2)
-        link.out_node.add_incoming(link2)
-        innov_number += 1
-        self.connections += [link1, link2]
+        innov_number = self.add_connection(link.in_node, node, random(), innov_number)
+        innov_number = self.add_connection(node, link.out_node, random(), innov_number)
         # disable the original link
         link.enable = False
         return innov_number
