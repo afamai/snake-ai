@@ -22,7 +22,7 @@ print('init time', end - start)
 # print(g3.input_nodes + g3.hidden_nodes + g3.output_nodes)
 # print(g3.connections[0].in_node)
 p = Population(10, 3, 1)
-print(p.mean_fitness_score())
+print(p.generate_new_generation())
 
 keys = ['Up', 'Right', 'Down', 'Left']
 
