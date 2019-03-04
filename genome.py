@@ -3,7 +3,11 @@ from link import Link
 import math
 from random import choice
 class Genome:
+    innov_number = 0
+    connections = []
     def __init__(self, num_inputs, num_outputs):
+        self.fitness_score = 0
+
         # create the input and output nodes
         self.hidden_nodes = []
         self.input_nodes = []
@@ -16,19 +20,23 @@ class Genome:
 
         # create the links for a simple feedforward neural network
         self.connections = []
-        innov_counter = 0
         for inode in self.input_nodes:
             for onode in self.output_nodes:
-                innov_counter = self.add_connection(inode, onode, random(), innov_counter)
+                self.add_link(inode, onode, random())
 
-    def add_connection(self, inode, onode, weight, innov_number):
-        link = Link(inode, onode, weight, innov_number)
+    @staticmethod
+    def add_connection(inode, onode, weight):
+        link = Link(inode, onode, weight, Genome.innov_number)
         inode.add_outgoing(link)
         onode.add_incoming(link)
-        self.connections.append(link)
-        return innov_number + 1
+        Genome.connections.append(link)
+        Genome.innov_number += 1
+        return link
+
+    def add_link(self, inode, onode, weight):
+        self.connections.append(self.add_connection(inode, onode, weight))
     
-    def mutate_add_link(self, innov_number):
+    def mutate_add_link(self):
         possible_outputs = self.hidden_nodes + self.output_nodes
         onode = choice(possible_outputs)
         possible_inputs = possible_outputs + self.input_nodes
@@ -45,20 +53,20 @@ class Genome:
         
         # Allow recurrent links for now
         # create new connection
-        return self.add_connection(inode, onode, random(), innov_number)
+        self.add_link(inode, onode, random())
     
-    def mutate_add_node(self, innov_number):
+    def mutate_add_node(self):
         # find random link
         link = choice(self.connections)
         # create new node
         bias = random()
         node = Node(NodeType.HIDDEN, bias)
+        self.hidden_nodes.append(node)
         # create 2 new links
-        innov_number = self.add_connection(link.in_node, node, random(), innov_number)
-        innov_number = self.add_connection(node, link.out_node, random(), innov_number)
+        self.add_link(link.in_node, node, random())
+        self.add_link(node, link.out_node, random())
         # disable the original link
         link.enable = False
-        return innov_number
 
     def activate(self, inputs):
         # pass inputs into input nodes
@@ -87,9 +95,8 @@ class Genome:
                 # pass the sum through activation function (sigmoid)
                 node.active_sum = 1 / (1 + math.exp(-active_sum))
                 node.active_flag = True
-
+            print('hit')
         for node in nodes:
             node.active_flag = False
-        
         return list(map(lambda node: node.active_sum, self.output_nodes))
                 

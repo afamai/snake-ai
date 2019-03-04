@@ -10,18 +10,19 @@ win = GraphWin("Snake Game", 700, 700)
 win.setBackground('black')
 
 # init
-snake = Snake(25, 25, SnakeGame.RIGHT, 3)
+snake = Snake(12, 12, SnakeGame.RIGHT, 3)
 board = Board(50, 50)
 game = SnakeGame(win, snake, board)
-g = Genome(250, 4)
+g = Genome(2500, 4)
 keys = ['Up', 'Right', 'Down', 'Left']
 # game loop
 over = False
-n = 333
-print(g.mutate_add_node(n))
-# while not over:
-#     data = np.array(board.data)
-#     result = g.activate(data.flatten())
-#     key = keys[np.argmax(result)]
-#     over = game.update(key)
-#     time.sleep(0.05)
+print(Genome.innov_number)
+g.mutate_add_node()
+print(Genome.innov_number)
+while not over:
+    data = np.array(board.data)
+    result = g.activate(data.flatten())
+    key = keys[np.argmax(result)]
+    over = game.update(key)
+    time.sleep(0.05)
