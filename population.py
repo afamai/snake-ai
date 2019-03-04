@@ -46,6 +46,7 @@ class Population:
             
             new_genome = Genome.single_point_crossover(self.genomes[parent1], self.genomes[parent2])
             # mutations
+            new_genome.mutate()
             new_genomes.append(new_genome)
         
         self.genomes = new_genomes
