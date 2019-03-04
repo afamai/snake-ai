@@ -7,7 +7,8 @@ class NodeType(Enum):
     OUTPUT = 2
 
 class Node:
-    def __init__(self, node_type, bias):
+    def __init__(self, node_type, bias, node_id):
+        self.id = node_id
         self.type = node_type
         self.bias = bias
         self.incoming = []
