@@ -1,11 +1,12 @@
 from node import *
 from link import Link
 import math
-from random import choice
+from random import choice, randint
 import time
+import copy
 class Genome:
     connections = []
-    def __init__(self, num_inputs, num_outputs):
+    def __init__(self, num_inputs = 0, num_outputs = 0):
         self.fitness_score = 0
 
         # create the input and output nodes
@@ -83,6 +84,55 @@ class Genome:
         self.add_link(node, link.out_node, random())
         # disable the original link
         link.enable = False
+    
+    @staticmethod
+    def single_point_crossover(genome1, genome2):
+        # find all matching genes
+        g1_innov = set(map(lambda link: link.innovation, genome1.connections))
+        g2_innov = set(map(lambda link: link.innovation, genome2.connections))
+
+        matching = g1_innov & g2_innov
+
+        # select a random point
+        rand_point = randint(0, len(matching))
+
+        # perform cross over on matching genes
+        g1_matching_genes = list(filter(lambda link: link.innovation in matching, genome1.connections))
+        g2_matching_genes = list(filter(lambda link: link.innovation in matching, genome2.connections))
+        genes = copy.deepcopy(g1_matching_genes[:rand_point])
+        genes += copy.deepcopy(g2_matching_genes[rand_point:])
+
+        # determine which parent is the better one
+        if genome1.fitness_score == genome2.fitness_score:
+            # add both parents disjoint and excess genes
+            genes += list(filter(lambda link: link.innovation not in matching, genome1.connections + genome2.connections))
+        else:
+            # add only the better parent's disjoin and excess genes
+            if genome1.fitness_score > genome2.fitness_score:
+                genes += list(filter(lambda link: link.innovation not in matching, genome1.connections))
+            else:
+                genes += list(filter(lambda link: link.innovation not in matching, genome2.connections))
+
+        # create new Genome
+        new_genome = Genome()
+        new_genome.connections = genes
+
+        # set the input, hidden and output nodes for the new Genome
+        all_nodes = []
+        for link in genes:
+            all_nodes += [link.in_node, link.out_node]
+        # remove all duplicate nodes
+        all_nodes = list(set(all_nodes))
+        # place all the nodes in their respected type
+        for node in all_nodes:
+            if node.type == NodeType.INPUT:
+                new_genome.input_nodes.append(node)
+            elif node.type == NodeType.OUTPUT:
+                new_genome.output_nodes.append(node)
+            elif node.pty == NodeType.HIDDEN:
+                new_genome.hidden_nodes.append(node)
+
+        return new_genome
 
     def activate(self, inputs):
         # pass inputs into input nodes
