@@ -49,6 +49,18 @@ class Genome:
             self.hidden_nodes.append(node)
         self.node_number += 1
         return node
+
+    def mutate_connections(self, rate):
+        for link in self.connections:
+            roll = random()
+            if roll < rate:
+                link.mutate()
+
+    def mutate_nodes(self, rate):
+        for node in self.hidden_nodes:
+            roll = random()
+            if roll < rate:
+                node.mutate()
     
     def mutate_add_link(self):
         possible_outputs = self.hidden_nodes + self.output_nodes
