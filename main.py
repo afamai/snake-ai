@@ -1,6 +1,7 @@
 from graphics import *
 from snake_game import *
 from genome import *
+from population import Population
 from link import *
 from node import *
 import numpy as np
@@ -20,6 +21,9 @@ print('init time', end - start)
 # print(g2.input_nodes + g2.hidden_nodes + g2.output_nodes)
 # print(g3.input_nodes + g3.hidden_nodes + g3.output_nodes)
 # print(g3.connections[0].in_node)
+p = Population(10, 3, 1)
+print(p.mean_fitness_score())
+
 keys = ['Up', 'Right', 'Down', 'Left']
 
 win = GraphWin("Snake Game", 700, 700)
