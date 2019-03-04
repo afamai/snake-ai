@@ -134,6 +134,46 @@ class Genome:
 
         return new_genome
 
+    def compatibility(self, other):
+        # find the average weight difference of matching genes
+        g1_innov = set(map(lambda link: link.innovation, self.connections))
+        g2_innov = set(map(lambda link: link.innovation, other.connections))
+
+        matching = g1_innov & g2_innov
+
+        g1_matching_genes = list(filter(lambda link: link.innovation in matching, self.connections))
+        g2_matching_genes = list(filter(lambda link: link.innovation in matching, other.connections))
+        avg_weight_diff = 0
+        for i in range(len(matching)):
+            avg_weight_diff += abs(g1_matching_genes[i].weight - g2_matching_genes[i].weight)
+        avg_weight_diff /= len(matching)
+
+        # find number of disjoint
+        g1_non_matching = g1_innov - matching
+        g2_non_matching = g2_innov - matching
+        # find the max innov number in both non matching genes
+        g1_max_innov = 0 if len(g1_non_matching) <= 0 else max(g1_non_matching)
+        g2_max_innov = 0 if len(g2_non_matching) <= 0 else max(g2_non_matching)
+        
+        if g1_max_innov > g2_max_innov:
+            temp1 = g1_non_matching
+            temp2 = g2_non_matching
+            min_innov = g2_max_innov
+        else:
+            temp1 = g2_non_matching
+            temp2 = g1_non_matching
+            min_innov = g1_max_innov
+        
+        excess = set(filter(lambda x: x > min_innov, temp1))
+        total_disjoints = len(temp2) + len(temp1 - excess)
+        # find number of excess
+        total_excess = len(excess)
+        # calculation
+        N = len(self.connections) if len(self.connections) > len(other.connections) else len(other.connections)
+        distance = (1 * total_excess / N) + (1 * total_disjoints / N) + (1 * avg_weight_diff)
+        print(total_disjoints, total_excess)
+        return distance
+
     def activate(self, inputs):
         # pass inputs into input nodes
         for idx, inode in enumerate(self.input_nodes):
