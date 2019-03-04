@@ -7,6 +7,9 @@ class Board:
     def set_cell(self, x, y, val):
         self.data[y][x] = val
     
+    def clear_board(self):
+        self.data = [[0 for x in range(self.width)] for y in range(self.height)]
+
     def clear_cell(self, x, y):
         self.data[y][x] = 0
 

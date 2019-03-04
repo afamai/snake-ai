@@ -15,7 +15,7 @@ class Genome:
         self.node_number = 0
         for i in range(num_inputs):
             self.add_node(NodeType.INPUT, 0)
-
+        # print(len(self.input_nodes))
         self.output_nodes = []
         for i in range(num_outputs):
             self.add_node(NodeType.OUTPUT, 0)
@@ -134,13 +134,20 @@ class Genome:
         # create new Genome
         new_genome = Genome()
         new_genome.connections = genes
-
         # set the input, hidden and output nodes for the new Genome
+        # NOTE: genes contains link from both parents meaning that even if the link point to the same node id, it doesn't mean that the node is the same (refernces are difference)
+        # This is a temporary fix to the issue
         all_nodes = []
+        all_nodes_id = []
         for link in genes:
-            all_nodes += [link.in_node, link.out_node]
-        # remove all duplicate nodes
-        all_nodes = list(set(all_nodes))
+            if link.in_node.id not in all_nodes_id:
+                all_nodes.append(link.in_node)
+                all_nodes_id.append(link.in_node.id)
+
+            if link.out_node.id not in all_nodes_id:
+                all_nodes.append(link.out_node)
+                all_nodes_id.append(link.out_node.id)
+
         # place all the nodes in their respected type
         for node in all_nodes:
             if node.type == NodeType.INPUT:
@@ -149,7 +156,6 @@ class Genome:
                 new_genome.output_nodes.append(node)
             elif node.pty == NodeType.HIDDEN:
                 new_genome.hidden_nodes.append(node)
-
         return new_genome
 
     def compatibility(self, other):
@@ -206,14 +212,8 @@ class Genome:
                 active_sum = 0
                 for link in node.incoming:
                     # the in_node within the link must be active first
-                    if link.enable:
-                        if link.in_node.active_flag or link.in_node.type == NodeType.INPUT:
+                    if link.enable or link.in_node.type == NodeType.INPUT:
                             active_sum += link.weight * link.in_node.active_sum
-                        else:
-                            complete = False
-                            break
-                if not complete:
-                    continue
                 if node.type != NodeType.OUTPUT:
                     active_sum += node.bias
                 # pass the sum through activation function (sigmoid)

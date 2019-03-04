@@ -9,6 +9,8 @@ class SnakeGame:
     LEFT = (-1, 0)
     RIGHT = (1, 0)
     def __init__(self, window, snake, board):
+        self.snake_init_pos = snake.body.copy()
+        self.snake_init_dir = snake.direction
         self.snake = snake
         self.board = board
         self.window = window
@@ -27,6 +29,24 @@ class SnakeGame:
         self.food = self.generate_new_food()
         self.point = 0
     
+    def reset(self):
+        self.point = 0
+        self.board.clear_board()
+        while len(self.snake_rects) > 0:
+            rect = self.snake_rects.pop()
+            rect.setFill('black')
+        
+        self._draw_rect(self.food[0], self.food[1]).setFill('black')
+
+        self.snake.body = self.snake_init_pos.copy()
+        self.snake.direction = self.snake_init_dir
+        for (x, y) in self.snake.get_body():
+            self.board.set_cell(x, y, 0.5)
+            rect = self._draw_rect(x, y)
+            self.snake_rects.append(rect)
+        
+        self.food = self.generate_new_food()
+
     def update(self, key):
         # key = self.window.checkKey()
         if (key == 'Up' and self.snake.get_direction() != self.DOWN):
@@ -44,8 +64,6 @@ class SnakeGame:
 
         # check if the snake is in the zone or dead
         if (self.snake.is_dead() or new_pos[0] < 0 or new_pos[0] > self.board.get_width()-1 or new_pos[1] < 0 or new_pos[1] > self.board.get_height()-1):
-            print('Game Over')
-            self.window.close()
             return True
 
         # draw the new head

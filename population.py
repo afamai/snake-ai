@@ -7,15 +7,16 @@ class Population:
         self.size = size
         self.genomes = []
         for i in range(size):
-            a = Genome(inputs, outputs)
-            a.fitness_score = randint(0, 10)
-            self.genomes.append(a)
+            self.genomes.append(Genome(inputs, outputs))
 
+    def get_best(self):
+        fitness = [(i, genome.fitness_score) for i, genome in enumerate(self.genomes)]
+        fitness.sort(key=itemgetter(1), reverse=True)
+        return self.genomes[fitness[0][0]]
 
     def mean_fitness_score(self):
         # get all fitness scores as a list
         fitness = list(map(lambda genome: genome.fitness_score, self.genomes))
-        print(fitness)
         # find the max fitness score
         max_fitness = 1 if max(fitness) == 0 else max(fitness)
         # normalize all the fitness scores
@@ -29,12 +30,9 @@ class Population:
     def generate_new_generation(self):
         # == selection ==
         fitness = [(i, genome.fitness_score) for i, genome in enumerate(self.genomes)]
-        print(fitness)
         fitness.sort(key=itemgetter(1), reverse=True)
-        print(fitness)
         top = 5
         best = [ i for i, s in fitness[:top]]
-        print(best)
         new_genomes = []
         # crossover
         for i in range(self.size):
@@ -47,6 +45,7 @@ class Population:
             new_genome = Genome.single_point_crossover(self.genomes[parent1], self.genomes[parent2])
             # mutations
             new_genome.mutate()
+            # print(len(new_genome.input_nodes))
             new_genomes.append(new_genome)
         
         self.genomes = new_genomes
