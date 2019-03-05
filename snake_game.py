@@ -1,5 +1,6 @@
 from graphics import GraphWin, Rectangle, Point
 from msvcrt import getch
+import numpy as np
 import operator
 import random
 class SnakeGame:
@@ -61,9 +62,8 @@ class SnakeGame:
 
 
 
-    def update(self):
-        key = self.window.checkKey()
-        print(key)
+    def update(self, key):
+        # key = self.window.checkKey()
         if (key == 'Up' and self.direction != self.DOWN):
             self.direction = self.UP
         elif (key == 'Down' and self.direction != self.UP):
@@ -78,7 +78,7 @@ class SnakeGame:
         new_pos = tuple(map(operator.add, self.snake[0], self.direction))
         
         # check if the snake is in the zone or dead
-        if (new_pos in self.snake[1:] or new_pos[0] < 0 or new_pos[0] > self.width-1 or new_pos[1] < 0 or new_pos[1] > self.height-1):
+        if (new_pos in self.snake[1:] or self.outside_board(new_pos[0], new_pos[1])):
             return True
         
         self.snake.insert(0, new_pos)
@@ -117,7 +117,27 @@ class SnakeGame:
         rect.setFill(color)
         rect.draw(self.window)
         return rect
-
+    
+    def outside_board(self, x, y):
+        return x < 0 or x > self.width-1 or y < 0 or y > self.height-1
+    
+    def get_visions(self):
+        visions = []
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
+                if i == 0 and j == 0:
+                    continue
+                x, y = tuple(map(operator.add, self.snake[0], (i, j)))
+                vector = []
+                while not self.outside_board(x, y):
+                    vector.append(self.board[y][x])
+                    x += i
+                    y += j
+                food_dist = 0 if 2 not in vector else vector.index(2) + 1
+                body_dist = 0 if 1 not in vector else vector.index(1) + 1
+                wall_dist = len(vector)
+                visions += [food_dist, body_dist, wall_dist]
+        return visions
     def to_string(self):
         string = ""
         for row in self.board:
