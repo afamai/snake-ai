@@ -23,8 +23,8 @@ class Genome:
         # create the links for a simple feedforward neural network
         self.connections = []
         for inode in self.input_nodes:
-            for onode in self.output_nodes:
-                self.add_link(inode, onode, random())
+            onode = choice(self.output_nodes)
+            self.add_link(inode, onode, random())
 
     def add_link(self, inode, onode, weight):
         # check to see if link already exist
@@ -154,7 +154,7 @@ class Genome:
                 new_genome.input_nodes.append(node)
             elif node.type == NodeType.OUTPUT:
                 new_genome.output_nodes.append(node)
-            elif node.pty == NodeType.HIDDEN:
+            elif node.type == NodeType.HIDDEN:
                 new_genome.hidden_nodes.append(node)
         return new_genome
 

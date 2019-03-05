@@ -2,6 +2,7 @@ from genome import Genome
 import numpy as np
 from operator import itemgetter
 from random import randint, choice
+import time
 class Population:
     def __init__(self, size, inputs, outputs):
         self.size = size
@@ -41,8 +42,10 @@ class Population:
             parent2 = choice(best)
             while parent1 == parent2:
                 parent2 = choice(best)
-            
+
+            start = time.time()
             new_genome = Genome.single_point_crossover(self.genomes[parent1], self.genomes[parent2])
+            end = time.time()
             # mutations
             new_genome.mutate()
             # print(len(new_genome.input_nodes))
